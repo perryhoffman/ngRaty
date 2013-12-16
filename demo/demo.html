@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html ng-app="ratyapp">
+<head>
+  <title>ng-raty</title>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/foundation/5.0.2/css/foundation.min.css" />
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+  <script type="text/javascript" src="libs/jquery.raty.min.js"></script>
+  <script type="text/javascript" src="../ngraty.js"></script>
+</head>
+<body>
+<div ng-app="ratyapp"
+     ng-controller="RatyCtrl"
+     class="panel radius">
+  <h1>Raty</h1>
+  <div ng-raty="ratyOptions"
+       ng-model="rating.current"
+       mouse-over="demo.mouseOver(stars, e);"
+       mouse-out="demo.mouseOut(stars, e);"></div>
+  <ul>
+    <li>Rating: {{ rating.current }}</li>
+    <li>MouseOver: {{ rating.over }}</li>
+    <li>MouseOut: {{ rating.out }}</li>
+  </ul>
+  <div>
+    <input type="number" ng-model="tempValue" />
+    <button ng-click="demo.setRating(tempValue); tempValue = null;">Set Rating</button>
+  </div>
+</div>
+<script>
+  angular.module('ratyapp', ['ngRaty'])
+  .controller('RatyCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
+    $scope.demo        = this;
+    $scope.rating      = {
+      current: 0,
+      over: 0,
+      out: 0
+    };
+    $scope.ratyOptions = {
+      half: true,
+      cancel: true,
+      cancelOn: 'img/cancel-off.png',
+      cancelOff: 'img/cancel-on.png',
+      starHalf: 'img/star-half.png',
+      starOff: 'img/star-off.png',
+      starOn: 'img/star-on.png'
+    };
+
+    this.mouseOver = function(stars, e){
+      $scope.rating.over = stars || 0;
+    };
+
+    this.mouseOut = function(stars, e){
+      $scope.rating.out = stars || 0;
+    };
+
+    this.setRating = function(value) {
+      if(typeof value != 'number') return;
+
+      // Remove negatives, round to nearest .5, caps at 5 (demo purposes only)
+      value = (Math.round(Math.abs(parseFloat(value) || 0) * 2) / 2).toFixed(1)
+      $scope.rating.current = value > 5 ? 5 : value;
+    };
+  }]);
+</script>
+</body>
+</html>
