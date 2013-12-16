@@ -9,6 +9,17 @@ angular.module('ngRaty', [])
       mouseOut: '&'
     },
     link: function ($scope, $element, $attrs) {
+      function safeApply(fn) {
+        var phase = $scope.$root.$$phase;
+        if(phase == '$apply' || phase == '$digest') {
+          if(fn && (typeof(fn) === 'function')) {
+            fn();
+          }
+        } else {
+          $scope.$apply(fn);
+        }
+      };
+
       var rating  = $scope.ngModel;
       var raty    = {
         score: parseFloat(rating, 10),
@@ -35,21 +46,15 @@ angular.module('ngRaty', [])
       var options = angular.extend(raty, $scope.ngRaty || {});
       $element.raty(options);
 
-      function safeApply(fn) {
-        var phase = $scope.$root.$$phase;
-        if(phase == '$apply' || phase == '$digest') {
-          if(fn && (typeof(fn) === 'function')) {
-            fn();
-          }
-        } else {
-          $scope.$apply(fn);
-        }
-      };
-
       // Set view to score if model changes
       $scope.$watch('ngModel', function(newValue, oldValue){
         $element.raty('score', $scope.ngModel);
       });
+
+      function destroy(){
+        $element.raty('destroy');
+      }
+      $element.bind('$destroy', destroy);
     }
   }
 }]);
