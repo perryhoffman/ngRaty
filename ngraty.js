@@ -15,27 +15,36 @@ angular.module('ngRaty', [])
         click: function(stars, evt){
           evt.stopPropagation();
           if(!stars) stars = 0;
-          if(!$scope.$$phase) {
-            $scope.$apply(function(){
-              $scope.ngModel = parseFloat(stars);
-            });
-          } else {
+          safeApply(function(){
             $scope.ngModel = parseFloat(stars);
-          }
+          });
         },
         mouseover: function(stars, evt) {
           if(!$scope.mouseOver) return;
-          $scope.mouseOver({stars: stars, e: evt});
-          $scope.$apply(); // TODO add safe apply
+          safeApply(function(){
+            $scope.mouseOver({stars: stars, e: evt});
+          });
         },
         mouseout: function(stars, evt) {
           if(!$scope.mouseOut) return;
-          $scope.mouseOut({stars: stars, e: evt});
-          $scope.$apply();
+          safeApply(function(){
+            $scope.mouseOut({stars: stars, e: evt});
+          });
         }
       };
       var options = angular.extend(raty, $scope.ngRaty || {});
       $element.raty(options);
+
+      function safeApply(fn) {
+        var phase = $scope.$root.$$phase;
+        if(phase == '$apply' || phase == '$digest') {
+          if(fn && (typeof(fn) === 'function')) {
+            fn();
+          }
+        } else {
+          $scope.$apply(fn);
+        }
+      };
 
       // Set view to score if model changes
       $scope.$watch('ngModel', function(newValue, oldValue){
