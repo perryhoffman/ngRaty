@@ -8,6 +8,11 @@
 - [jQuery](http://jquery.com/)
 - [jQuery Raty](https://github.com/wbotelhos/raty)
 
+#### Install with Bower
+
+```sh
+$ bower install ngraty
+```
 
 ## Getting Started
 
